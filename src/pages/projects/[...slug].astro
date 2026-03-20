@@ -1,0 +1,168 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Tag from '@/components/Tag.astro';
+import { formatDate } from '@/lib/utils';
+
+export async function getStaticPaths() {
+  const projects = await getCollection('projects');
+  return projects.map((project) => ({
+    params: { slug: project.slug },
+    props: { project },
+  }));
+}
+
+const { project } = Astro.props;
+const { Content } = await project.render();
+
+const formattedDate = formatDate(project.data.date);
+---
+
+<BaseLayout
+  title={`${project.data.title} | 华工`}
+  description={project.data.description}
+  image={project.data.heroImage}
+>
+  <article class="pt-24 pb-16">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+      <!-- Back link -->
+      <a
+        href="/projects"
+        class="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors mb-8"
+      >
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+        </svg>
+        返回项目列表
+      </a>
+
+      <!-- Header -->
+      <header class="mb-12">
+        <!-- Tags -->
+        <div class="flex flex-wrap gap-2 mb-4">
+          {project.data.tags.map((tag) => (
+            <Tag tag={tag} />
+          ))}
+        </div>
+
+        <!-- Title -->
+        <h1 class="text-3xl sm:text-4xl lg:text-5xl font-bold mb-6 leading-tight">
+          {project.data.title}
+        </h1>
+
+        <!-- Meta -->
+        <div class="flex flex-wrap items-center gap-4 text-muted-foreground">
+          <time datetime={project.data.date.toISOString()}>
+            {formattedDate}
+          </time>
+        </div>
+
+        <!-- Links -->
+        {(project.data.demo || project.data.repo) && (
+          <div class="flex flex-wrap gap-4 mt-6">
+            {project.data.demo && (
+              <a
+                href={project.data.demo}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="inline-flex items-center gap-2 px-6 py-3 rounded-xl font-semibold text-white transition-all duration-300 hover:scale-105"
+                style="background: linear-gradient(135deg, hsl(var(--primary)), hsl(190 70% 60%)); box-shadow: 0 10px 40px -10px hsl(var(--primary) / 0.5);"
+              >
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                </svg>
+                在线演示
+              </a>
+            )}
+
+            {project.data.repo && (
+              <a
+                href={project.data.repo}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="inline-flex items-center gap-2 px-6 py-3 rounded-xl font-semibold border border-border bg-card hover:bg-accent transition-all duration-300 hover:scale-105"
+              >
+                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" />
+                </svg>
+                源码
+              </a>
+            )}
+          </div>
+        )}
+      </header>
+
+      <!-- Hero Image -->
+      {project.data.heroImage && (
+        <div class="aspect-video rounded-xl overflow-hidden mb-12">
+          <img
+            src={project.data.heroImage}
+            alt={project.data.title}
+            class="w-full h-full object-cover"
+          />
+        </div>
+      )}
+
+      <!-- Content -->
+      <div class="prose prose-invert prose-lg max-w-none
+        prose-headings:gradient-text
+        prose-a:text-primary prose-a:no-underline hover:prose-a:underline
+        prose-code:text-primary prose-code:bg-accent prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-code:before:content-none prose-code:after:content-none
+        prose-pre:bg-card prose-pre:border prose-pre:border-border
+        prose-img:rounded-xl
+        prose-li:marker:text-muted-foreground
+      ">
+        <Content />
+      </div>
+
+      <!-- Footer -->
+      <footer class="mt-16 pt-8 border-t border-border">
+        <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div class="flex flex-wrap gap-2">
+            {project.data.tags.map((tag) => (
+              <Tag tag={tag} />
+            ))}
+          </div>
+          <a
+            href="/projects"
+            class="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
+          >
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+            </svg>
+            返回项目列表
+          </a>
+        </div>
+      </footer>
+    </div>
+  </article>
+</BaseLayout>
+
+<style is:global>
+  /* Prose customization */
+  .prose h1 { @apply text-4xl font-bold mb-6; }
+  .prose h2 { @apply text-3xl font-bold mt-12 mb-4; }
+  .prose h3 { @apply text-2xl font-semibold mt-8 mb-3; }
+  .prose h4 { @apply text-xl font-semibold mt-6 mb-2; }
+
+  .prose p { @apply mb-6 leading-relaxed; }
+
+  .prose ul, .prose ol { @apply mb-6 pl-6; }
+  .prose li { @apply mb-2; }
+
+  .prose blockquote {
+    @apply border-l-4 border-primary pl-6 italic text-muted-foreground my-6;
+  }
+
+  .prose hr { @apply my-12 border-border; }
+
+  .prose img { @apply rounded-xl my-8; }
+
+  .prose pre {
+    @apply my-6 p-4 rounded-lg overflow-x-auto;
+  }
+
+  .prose code:not(pre code) {
+    @apply bg-accent px-1.5 py-0.5 rounded text-sm;
+  }
+</style>

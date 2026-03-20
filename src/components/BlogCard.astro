@@ -1,0 +1,84 @@
+---
+import { Image } from 'astro:assets';
+
+interface Props {
+  title: string;
+  description: string;
+  pubDate: Date;
+  heroImage?: string;
+  tags: string[];
+  slug: string;
+  readingTime?: number;
+}
+
+const { title, description, pubDate, heroImage, tags, slug, readingTime } = Astro.props;
+
+const defaultImage = 'https://images.unsplash.com/photo-1516116216624-53e697fedbea?w=800&h=400&fit=crop';
+
+const formattedDate = pubDate.toLocaleDateString('zh-CN', {
+  year: 'numeric',
+  month: 'long',
+  day: 'numeric',
+});
+---
+
+<article class="group relative overflow-hidden rounded-xl bg-card border border-border card-hover">
+  <!-- Image -->
+  <div class="aspect-video overflow-hidden">
+    <Image
+      src={heroImage || defaultImage}
+      alt={title}
+      width={800}
+      height={400}
+      class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+    />
+  </div>
+
+  <!-- Content -->
+  <div class="p-6 relative z-10">
+    <!-- Meta info -->
+    <div class="flex items-center gap-3 text-sm text-muted-foreground mb-3">
+      <time datetime={pubDate.toISOString()}>
+        {formattedDate}
+      </time>
+      {readingTime && (
+        <>
+          <span class="w-1 h-1 rounded-full bg-muted-foreground"></span>
+          <span>{readingTime} 分钟阅读</span>
+        </>
+      )}
+    </div>
+
+    <!-- Title -->
+    <h3 class="text-xl font-semibold mb-2 group-hover:text-primary transition-colors line-clamp-2">
+      {title}
+    </h3>
+
+    <!-- Description -->
+    <p class="text-muted-foreground text-sm mb-4 line-clamp-2">
+      {description}
+    </p>
+
+    <!-- Tags -->
+    <div class="flex flex-wrap gap-2">
+      {tags.slice(0, 3).map((tag) => (
+        <span class="px-2.5 py-1 text-xs font-medium rounded-md bg-primary/10 text-primary">
+          {tag}
+        </span>
+      ))}
+    </div>
+  </div>
+
+  <!-- Clickable overlay -->
+  <a href={`/blog/${slug}`} class="absolute inset-0 z-20" aria-label={`阅读: ${title}`}></a>
+
+  <!-- Read more indicator -->
+  <div class="absolute bottom-6 right-6 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+    <span class="inline-flex items-center gap-1 text-sm font-medium text-primary">
+      阅读全文
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+      </svg>
+    </span>
+  </div>
+</article>

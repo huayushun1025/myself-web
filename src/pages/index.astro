@@ -1,0 +1,184 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Hero from '@/components/Hero.astro';
+import BlogCard from '@/components/BlogCard.astro';
+import ProjectCard from '@/components/ProjectCard.astro';
+import { getCollection } from 'astro:content';
+import { sortByDate } from '@/lib/utils';
+
+// Get latest 3 blog posts
+const allPosts = await getCollection('blog', ({ data }) => !data.draft);
+const latestPosts = sortByDate(allPosts).slice(0, 3);
+
+// Get featured projects
+const allProjects = await getCollection('projects', ({ data }) => !data.draft);
+const featuredProjects = allProjects
+  .filter((project) => project.data.featured)
+  .slice(0, 3);
+
+const displayProjects = featuredProjects.length > 0
+  ? featuredProjects
+  : sortByDate(allProjects).slice(0, 3);
+---
+
+<BaseLayout title="flower | AIGC工程师 & 技术探索者">
+  <Hero />
+
+  <!-- Latest Blog Posts -->
+  <section class="py-24 bg-card/30">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      <!-- Section header -->
+      <div class="flex items-center justify-between mb-12">
+        <div>
+          <h2 class="text-3xl font-bold">
+            <span class="gradient-text">最新博客</span>
+          </h2>
+          <p class="mt-2 text-muted-foreground">
+            技术思考与实践经验
+          </p>
+        </div>
+        <a
+          href="/blog"
+          class="inline-flex items-center gap-2 text-primary hover:underline"
+        >
+          查看全部
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+          </svg>
+        </a>
+      </div>
+
+      <!-- Blog grid -->
+      {latestPosts.length > 0 ? (
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {latestPosts.map((post) => (
+            <BlogCard
+              title={post.data.title}
+              description={post.data.description}
+              pubDate={post.data.pubDate}
+              heroImage={post.data.heroImage}
+              tags={post.data.tags}
+              slug={post.slug}
+            />
+          ))}
+        </div>
+      ) : (
+        <div class="text-center py-12 text-muted-foreground">
+          <p>暂无博客文章</p>
+          <p class="text-sm mt-2">敬请期待...</p>
+        </div>
+      )}
+    </div>
+  </section>
+
+  <!-- Featured Projects -->
+  <section class="py-24">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      <!-- Section header -->
+      <div class="flex items-center justify-between mb-12">
+        <div>
+          <h2 class="text-3xl font-bold">
+            <span class="gradient-text">精选项目</span>
+          </h2>
+          <p class="mt-2 text-muted-foreground">
+            实际落地的技术方案
+          </p>
+        </div>
+        <a
+          href="/projects"
+          class="inline-flex items-center gap-2 text-primary hover:underline"
+        >
+          查看全部
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+          </svg>
+        </a>
+      </div>
+
+      <!-- Projects grid -->
+      {displayProjects.length > 0 ? (
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {displayProjects.map((project) => (
+            <ProjectCard
+              title={project.data.title}
+              description={project.data.description}
+              tags={project.data.tags}
+              image={project.data.heroImage}
+              demo={project.data.demo}
+              repo={project.data.repo}
+              slug={project.slug}
+            />
+          ))}
+        </div>
+      ) : (
+        <div class="text-center py-12 text-muted-foreground">
+          <p>暂无项目展示</p>
+          <p class="text-sm mt-2">正在建设中...</p>
+        </div>
+      )}
+    </div>
+  </section>
+
+  <!-- Skills Section -->
+  <section class="py-24 bg-card/30">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center mb-12">
+        <h2 class="text-3xl font-bold">
+          <span class="gradient-text">技术栈</span>
+        </h2>
+        <p class="mt-2 text-muted-foreground">
+          熟练掌握的技术领域
+        </p>
+      </div>
+
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+        {[
+          { name: '前端开发', icon: '⚛️', items: ['React', 'Vue', 'Next.js', 'Astro'] },
+          { name: '后端开发', icon: '🔧', items: ['Node.js', 'Python', 'Go', 'Rust'] },
+          { name: '物联网', icon: '📡', items: ['ESP32', 'MQTT', 'Node-RED', 'Home Assistant'] },
+          { name: 'AI/ML', icon: '🤖', items: ['Ollama', 'LangChain', 'PyTorch', 'Transformers'] },
+        ].map((skill) => (
+          <div class="p-6 rounded-xl bg-card border border-border card-hover">
+            <div class="text-4xl mb-4">{skill.icon}</div>
+            <h3 class="text-lg font-semibold mb-3">{skill.name}</h3>
+            <div class="flex flex-wrap gap-2">
+              {skill.items.map((item) => (
+                <span class="px-2 py-1 text-xs rounded-md bg-accent text-accent-foreground">
+                  {item}
+                </span>
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA Section -->
+  <section class="py-24">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+      <h2 class="text-3xl sm:text-4xl font-bold mb-6">
+        想了解更多？
+        <span class="gradient-text">联系我</span>
+      </h2>
+      <p class="text-lg text-muted-foreground mb-8">
+        无论是技术交流、项目合作还是职业机会，欢迎随时联系
+      </p>
+      <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+        <a
+          href="mailto:hello@example.com"
+          class="px-8 py-4 rounded-xl font-semibold text-white transition-all duration-300 hover:scale-105"
+          style="background: linear-gradient(135deg, hsl(var(--primary)), hsl(190 70% 60%)); box-shadow: 0 10px 40px -10px hsl(var(--primary) / 0.5);"
+        >
+          发送邮件
+        </a>
+        <a
+          href="/experience"
+          class="px-8 py-4 rounded-xl font-semibold border border-border bg-card hover:bg-accent transition-all duration-300 hover:scale-105"
+        >
+          查看经历
+        </a>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

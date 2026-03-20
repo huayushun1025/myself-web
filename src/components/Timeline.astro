@@ -1,0 +1,168 @@
+---
+interface TimelineItem {
+  title: string;
+  company: string;
+  period: string;
+  description: string;
+  tags?: string[];
+}
+
+interface Props {
+  items: TimelineItem[];
+}
+
+const { items } = Astro.props;
+---
+
+<section class="relative py-24">
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+    <!-- Section header -->
+    <div class="text-center mb-16">
+      <h2 class="text-3xl sm:text-4xl font-bold">
+        <span class="gradient-text">职业历程</span>
+      </h2>
+      <p class="mt-4 text-muted-foreground">
+        从初入职场到技术专家的成长之路
+      </p>
+    </div>
+
+    <!-- Timeline -->
+    <div class="relative">
+      <!-- Vertical line -->
+      <div
+        class="absolute left-[11px] sm:left-1/2 top-0 bottom-0 w-0.5 bg-gradient-to-b from-primary via-primary/50 to-transparent"
+        style="transform: translateX(-50%);"
+      ></div>
+
+      <div class="space-y-12">
+        {items.map((item, index) => (
+          <div
+            class="relative timeline-item opacity-0"
+            data-index={index}
+          >
+            <!-- Node -->
+            <div
+              class="absolute left-0 sm:left-1/2 w-6 h-6 rounded-full border-4 border-background bg-primary transform -translate-x-1/2 z-10 transition-all duration-500"
+              data-glow="true"
+            >
+              <div class="absolute inset-0 rounded-full bg-primary animate-pulse opacity-50"></div>
+            </div>
+
+            <!-- Content card -->
+            <div
+              class="ml-10 sm:ml-[calc(50%+2rem)] sm:w-[calc(50%-3rem)] pl-6 sm:pl-0"
+            >
+              <div
+                class="p-6 rounded-xl bg-card border border-border card-hover"
+                data-animate="true"
+              >
+                <!-- Period badge -->
+                <span class="inline-block px-3 py-1 text-xs font-medium rounded-full bg-primary/10 text-primary mb-3">
+                  {item.period}
+                </span>
+
+                <!-- Title -->
+                <h3 class="text-xl font-semibold mb-1">{item.title}</h3>
+
+                <!-- Company -->
+                <p class="text-primary font-medium mb-3">{item.company}</p>
+
+                <!-- Description -->
+                <p class="text-muted-foreground text-sm leading-relaxed mb-4">
+                  {item.description}
+                </p>
+
+                <!-- Tags -->
+                {item.tags && item.tags.length > 0 && (
+                  <div class="flex flex-wrap gap-2">
+                    {item.tags.map((tag) => (
+                      <span class="px-2 py-1 text-xs rounded-md bg-accent text-accent-foreground">
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+
+            <!-- Mobile spacing (hide on desktop) -->
+            {index % 2 === 1 && (
+              <div class="sm:hidden"></div>
+            )}
+          </div>
+        ))}
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  // Intersection Observer for scroll animations
+  const observerOptions = {
+    threshold: 0.2,
+    rootMargin: '0px 0px -50px 0px',
+  };
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) {
+        const timelineItem = entry.target as HTMLElement;
+        const index = parseInt(timelineItem.dataset.index || '0');
+        const delay = index * 200;
+
+        // Animate the timeline item
+        setTimeout(() => {
+          timelineItem.style.opacity = '1';
+          timelineItem.style.transform = 'translateY(0)';
+
+          // Animate the node glow
+          const node = timelineItem.querySelector('[data-glow="true"]');
+          if (node) {
+            (node as HTMLElement).style.boxShadow = '0 0 20px hsl(var(--primary) / 0.6)';
+          }
+        }, delay);
+
+        // Animate the card
+        const card = timelineItem.querySelector('[data-animate="true"]');
+        if (card) {
+          setTimeout(() => {
+            (card as HTMLElement).style.opacity = '1';
+            (card as HTMLElement).style.transform = 'translateY(0)';
+          }, delay + 100);
+        }
+
+        observer.unobserve(entry.target);
+      }
+    });
+  }, observerOptions);
+
+  // Initialize all timeline items
+  document.querySelectorAll('.timeline-item').forEach((item) => {
+    const timelineItem = item as HTMLElement;
+    timelineItem.style.transition = 'opacity 0.6s ease-out, transform 0.6s ease-out';
+    timelineItem.style.transform = 'translateY(30px)';
+
+    const card = timelineItem.querySelector('[data-animate="true"]') as HTMLElement;
+    if (card) {
+      card.style.transition = 'opacity 0.6s ease-out, transform 0.6s ease-out';
+      card.style.transform = 'translateY(20px)';
+    }
+
+    observer.observe(item);
+  });
+</script>
+
+<style>
+  /* Alternate layout for desktop */
+  @media (min-width: 640px) {
+    .timeline-item:nth-child(even) {
+      @apply sm:ml-0;
+    }
+
+    .timeline-item:nth-child(even) > :last-child {
+      @apply sm:ml-0 sm:mr-auto sm:text-right;
+      margin-left: auto;
+      margin-right: calc(50% + 2rem);
+    }
+  }
+</style>

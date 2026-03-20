@@ -1,0 +1,72 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import ProjectCard from '@/components/ProjectCard.astro';
+import Tag from '@/components/Tag.astro';
+import { getCollection } from 'astro:content';
+import { sortByDate } from '@/lib/utils';
+
+const allProjects = await getCollection('projects', ({ data }) => !data.draft);
+const projects = sortByDate(allProjects);
+
+// Get all unique tags
+const allTags = [...new Set(projects.flatMap((project) => project.data.tags))];
+---
+
+<BaseLayout
+  title="项目 | 华工"
+  description="产品项目展示 - 物联网系统、大语言模型应用和全栈开发项目"
+>
+  <div class="pt-24 pb-16">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      <!-- Header -->
+      <div class="text-center mb-12">
+        <h1 class="text-4xl sm:text-5xl font-bold mb-4">
+          <span class="gradient-text">产品项目</span>
+        </h1>
+        <p class="text-lg text-muted-foreground max-w-2xl mx-auto">
+          从概念到落地，每一个项目都是一次技术探索的实践。涵盖物联网、AI 应用和全栈开发等领域。
+        </p>
+      </div>
+
+      <!-- Tags filter -->
+      {allTags.length > 0 && (
+        <div class="flex flex-wrap justify-center gap-2 mb-12">
+          <Tag tag="全部" active={true} />
+          {allTags.map((tag) => (
+            <Tag tag={tag} />
+          ))}
+        </div>
+      )}
+
+      <!-- Projects grid -->
+      {projects.length > 0 ? (
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {projects.map((project) => (
+            <ProjectCard
+              title={project.data.title}
+              description={project.data.description}
+              tags={project.data.tags}
+              image={project.data.heroImage}
+              demo={project.data.demo}
+              repo={project.data.repo}
+              slug={project.slug}
+            />
+          ))}
+        </div>
+      ) : (
+        <div class="text-center py-20">
+          <div class="text-6xl mb-4">🚀</div>
+          <h2 class="text-2xl font-semibold mb-2">暂无项目展示</h2>
+          <p class="text-muted-foreground">
+            精彩项目正在筹备中，敬请期待...
+          </p>
+        </div>
+      )}
+
+      <!-- Stats -->
+      <div class="mt-16 text-center text-sm text-muted-foreground">
+        共 {projects.length} 个项目
+      </div>
+    </div>
+  </div>
+</BaseLayout>

@@ -1,0 +1,71 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import BlogCard from '@/components/BlogCard.astro';
+import Tag from '@/components/Tag.astro';
+import { getCollection } from 'astro:content';
+import { sortByDate } from '@/lib/utils';
+
+const allPosts = await getCollection('blog', ({ data }) => !data.draft);
+const posts = sortByDate(allPosts);
+
+// Get all unique tags
+const allTags = [...new Set(posts.flatMap((post) => post.data.tags))];
+---
+
+<BaseLayout
+  title="博客 | 华工"
+  description="技术博客 - 分享物联网、大语言模型和全栈开发的技术见解与实践经验"
+>
+  <div class="pt-24 pb-16">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      <!-- Header -->
+      <div class="text-center mb-12">
+        <h1 class="text-4xl sm:text-5xl font-bold mb-4">
+          <span class="gradient-text">技术博客</span>
+        </h1>
+        <p class="text-lg text-muted-foreground max-w-2xl mx-auto">
+          探索技术边界，分享实战经验。从物联网系统到大语言模型，记录每一个思考与成长的瞬间。
+        </p>
+      </div>
+
+      <!-- Tags filter -->
+      {allTags.length > 0 && (
+        <div class="flex flex-wrap justify-center gap-2 mb-12">
+          <Tag tag="全部" active={true} />
+          {allTags.map((tag) => (
+            <Tag tag={tag} />
+          ))}
+        </div>
+      )}
+
+      <!-- Posts grid -->
+      {posts.length > 0 ? (
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {posts.map((post) => (
+            <BlogCard
+              title={post.data.title}
+              description={post.data.description}
+              pubDate={post.data.pubDate}
+              heroImage={post.data.heroImage}
+              tags={post.data.tags}
+              slug={post.slug}
+            />
+          ))}
+        </div>
+      ) : (
+        <div class="text-center py-20">
+          <div class="text-6xl mb-4">📝</div>
+          <h2 class="text-2xl font-semibold mb-2">暂无博客文章</h2>
+          <p class="text-muted-foreground">
+            精彩内容正在筹备中，敬请期待...
+          </p>
+        </div>
+      )}
+
+      <!-- Stats -->
+      <div class="mt-16 text-center text-sm text-muted-foreground">
+        共 {posts.length} 篇文章
+      </div>
+    </div>
+  </div>
+</BaseLayout>

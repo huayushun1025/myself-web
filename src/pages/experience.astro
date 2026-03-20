@@ -1,0 +1,143 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Timeline from '@/components/Timeline.astro';
+
+const experiences = [
+  {
+    title: '高级全栈工程师',
+    company: '科技创新有限公司',
+    period: '2023 - 至今',
+    description: '负责公司核心产品线的前后端架构设计与开发，带领团队完成多个大型项目的落地。在职期间主导了物联网平台的重构，性能提升 300%，并成功将 AI 能力集成到现有产品中。',
+    tags: ['React', 'Node.js', 'Python', 'AWS', 'Docker'],
+  },
+  {
+    title: '全栈开发工程师',
+    company: '智能物联科技',
+    period: '2021 - 2023',
+    description: '参与智慧农业物联网系统的开发，负责边缘设备通信层和数据可视化模块的设计。主导开发的卷帘机自动化控制系统已在多个大型温室大棚投入实际使用。',
+    tags: ['ESP32', 'MQTT', 'Vue.js', 'Node-RED', 'InfluxDB'],
+  },
+  {
+    title: '前端开发工程师',
+    company: '互联网创业公司',
+    period: '2019 - 2021',
+    description: '作为前端主力开发，参与从 0 到 1 搭建公司主站和移动端应用。负责组件库建设和性能优化，使页面加载速度提升 60%，用户体验显著改善。',
+    tags: ['React', 'TypeScript', 'Webpack', 'SCSS'],
+  },
+  {
+    title: '软件工程实习生',
+    company: '某知名互联网企业',
+    period: '2018 - 2019',
+    description: '参与企业内部管理系统的开发和维护，学习企业级开发的工程化实践和代码规范。为后续职业生涯奠定了坚实的实践基础。',
+    tags: ['Java', 'Spring Boot', 'MySQL', 'Git'],
+  },
+];
+
+const education = [
+  {
+    title: '计算机科学与技术 · 学士',
+    company: '某重点大学',
+    period: '2015 - 2019',
+    description: '主修计算机科学与技术专业，系统学习了数据结构、算法、操作系统、计算机网络等核心课程。毕业设计《基于 MQTT 的物联网数据采集系统》获得优秀毕业论文。',
+    tags: ['数据结构', '算法', '操作系统', '计算机网络'],
+  },
+];
+---
+
+<BaseLayout
+  title="个人经历 | 华工"
+  description="职业经历 - 从初入职场到技术专家的成长之路"
+>
+  <div class="pt-24 pb-16">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      <!-- Header -->
+      <div class="text-center mb-16">
+        <h1 class="text-4xl sm:text-5xl font-bold mb-4">
+          <span class="gradient-text">个人经历</span>
+        </h1>
+        <p class="text-lg text-muted-foreground max-w-2xl mx-auto">
+          从初入职场到技术专家的成长之路，记录每一个重要节点和突破时刻。
+        </p>
+      </div>
+
+      <!-- Work Experience -->
+      <section class="mb-20">
+        <h2 class="text-2xl font-bold mb-8 flex items-center gap-3">
+          <span class="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
+            <svg class="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+            </svg>
+          </span>
+          工作经历
+        </h2>
+        <Timeline items={experiences} />
+      </section>
+
+      <!-- Education -->
+      <section>
+        <h2 class="text-2xl font-bold mb-8 flex items-center gap-3">
+          <span class="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
+            <svg class="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l9-5-9-5-9 5 9 5z" />
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z" />
+            </svg>
+          </span>
+          教育背景
+        </h2>
+        <Timeline items={education} />
+      </section>
+
+      <!-- Skills Summary -->
+      <section class="mt-20">
+        <h2 class="text-2xl font-bold mb-8 text-center">
+          <span class="gradient-text">技术能力</span>
+        </h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {[
+            {
+              category: '前端开发',
+              items: ['React / Next.js', 'Vue / Nuxt', 'TypeScript', 'Tailwind CSS'],
+              level: 90,
+            },
+            {
+              category: '后端开发',
+              items: ['Node.js', 'Python / FastAPI', 'Go', 'RESTful API'],
+              level: 85,
+            },
+            {
+              category: '物联网',
+              items: ['ESP32 / Arduino', 'MQTT / CoAP', 'Node-RED', 'Home Assistant'],
+              level: 88,
+            },
+            {
+              category: 'AI / ML',
+              items: ['LangChain', 'Ollama', 'PyTorch', 'RAG 应用'],
+              level: 75,
+            },
+          ].map((skill) => (
+            <div class="p-6 rounded-xl bg-card border border-border">
+              <h3 class="text-lg font-semibold mb-4">{skill.category}</h3>
+              <!-- Progress bar -->
+              <div class="mb-4">
+                <div class="h-2 bg-accent rounded-full overflow-hidden">
+                  <div
+                    class="h-full rounded-full transition-all duration-1000"
+                    style={`width: ${skill.level}%; background: linear-gradient(90deg, hsl(var(--primary)), hsl(190 70% 60%));`}
+                  ></div>
+                </div>
+              </div>
+              <!-- Tags -->
+              <div class="flex flex-wrap gap-2">
+                {skill.items.map((item) => (
+                  <span class="px-2.5 py-1 text-xs font-medium rounded-md bg-accent/80 text-accent-foreground">
+                    {item}
+                  </span>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+    </div>
+  </div>
+</BaseLayout>

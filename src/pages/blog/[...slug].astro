@@ -1,0 +1,137 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Tag from '@/components/Tag.astro';
+import { formatDate, calculateReadingTime } from '@/lib/utils';
+
+export async function getStaticPaths() {
+  const posts = await getCollection('blog');
+  return posts.map((post) => ({
+    params: { slug: post.slug },
+    props: { post },
+  }));
+}
+
+const { post } = Astro.props;
+const { Content } = await post.render();
+
+const readingTime = calculateReadingTime(post.body);
+const formattedDate = formatDate(post.data.pubDate);
+---
+
+<BaseLayout
+  title={`${post.data.title} | 华工`}
+  description={post.data.description}
+  image={post.data.heroImage}
+>
+  <article class="pt-24 pb-16">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+      <!-- Back link -->
+      <a
+        href="/blog"
+        class="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors mb-8"
+      >
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+        </svg>
+        返回博客列表
+      </a>
+
+      <!-- Header -->
+      <header class="mb-12">
+        <!-- Tags -->
+        <div class="flex flex-wrap gap-2 mb-4">
+          {post.data.tags.map((tag) => (
+            <Tag tag={tag} />
+          ))}
+        </div>
+
+        <!-- Title -->
+        <h1 class="text-3xl sm:text-4xl lg:text-5xl font-bold mb-6 leading-tight">
+          {post.data.title}
+        </h1>
+
+        <!-- Meta -->
+        <div class="flex flex-wrap items-center gap-4 text-muted-foreground">
+          <time datetime={post.data.pubDate.toISOString()}>
+            {formattedDate}
+          </time>
+          <span class="w-1 h-1 rounded-full bg-muted-foreground"></span>
+          <span>{readingTime} 分钟阅读</span>
+        </div>
+      </header>
+
+      <!-- Hero Image -->
+      {post.data.heroImage && (
+        <div class="aspect-video rounded-xl overflow-hidden mb-12">
+          <img
+            src={post.data.heroImage}
+            alt={post.data.title}
+            class="w-full h-full object-cover"
+          />
+        </div>
+      )}
+
+      <!-- Content -->
+      <div class="prose prose-invert prose-lg max-w-none
+        prose-headings:gradient-text
+        prose-a:text-primary prose-a:no-underline hover:prose-a:underline
+        prose-code:text-primary prose-code:bg-accent prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-code:before:content-none prose-code:after:content-none
+        prose-pre:bg-card prose-pre:border prose-pre:border-border
+        prose-img:rounded-xl
+        prose-li:marker:text-muted-foreground
+      ">
+        <Content />
+      </div>
+
+      <!-- Footer -->
+      <footer class="mt-16 pt-8 border-t border-border">
+        <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div class="flex flex-wrap gap-2">
+            {post.data.tags.map((tag) => (
+              <Tag tag={tag} />
+            ))}
+          </div>
+          <a
+            href="/blog"
+            class="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
+          >
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+            </svg>
+            返回博客列表
+          </a>
+        </div>
+      </footer>
+    </div>
+  </article>
+</BaseLayout>
+
+<style is:global>
+  /* Prose customization */
+  .prose h1 { @apply text-4xl font-bold mb-6; }
+  .prose h2 { @apply text-3xl font-bold mt-12 mb-4; }
+  .prose h3 { @apply text-2xl font-semibold mt-8 mb-3; }
+  .prose h4 { @apply text-xl font-semibold mt-6 mb-2; }
+
+  .prose p { @apply mb-6 leading-relaxed; }
+
+  .prose ul, .prose ol { @apply mb-6 pl-6; }
+  .prose li { @apply mb-2; }
+
+  .prose blockquote {
+    @apply border-l-4 border-primary pl-6 italic text-muted-foreground my-6;
+  }
+
+  .prose hr { @apply my-12 border-border; }
+
+  .prose img { @apply rounded-xl my-8; }
+
+  .prose pre {
+    @apply my-6 p-4 rounded-lg overflow-x-auto;
+  }
+
+  .prose code:not(pre code) {
+    @apply bg-accent px-1.5 py-0.5 rounded text-sm;
+  }
+</style>
