@@ -92,17 +92,26 @@ function isActive(href: string): boolean {
 </header>
 
 <script>
-  const menuBtn = document.getElementById('mobile-menu-btn');
-  const mobileMenu = document.getElementById('mobile-menu');
+  // Mobile menu toggle
+  function initMobileMenu() {
+    const menuBtn = document.getElementById('mobile-menu-btn');
+    const mobileMenu = document.getElementById('mobile-menu');
 
-  menuBtn?.addEventListener('click', () => {
-    mobileMenu?.classList.toggle('hidden');
-  });
-
-  // Close menu when clicking a link
-  mobileMenu?.querySelectorAll('a').forEach((link) => {
-    link.addEventListener('click', () => {
-      mobileMenu?.classList.add('hidden');
+    menuBtn?.addEventListener('click', () => {
+      mobileMenu?.classList.toggle('hidden');
     });
-  });
+
+    // Close menu when clicking a link
+    mobileMenu?.querySelectorAll('a').forEach((link) => {
+      link.addEventListener('click', () => {
+        mobileMenu?.classList.add('hidden');
+      });
+    });
+  }
+
+  // Run on initial load
+  initMobileMenu();
+
+  // Re-run after page transitions (View Transitions)
+  document.addEventListener('astro:page-load', initMobileMenu);
 </script>

@@ -2,8 +2,9 @@
 title: "Windows环境下OpenClaw系统的全景解析与详尽安装指南"
 description: "OpenClaw是一款开源的本地 AI 智能体框架，能够像数字员工一样在你的电脑上自动执行任务（如文件处理、日程管理、邮件整理、跨平台操作等）。它支持接入 Qwen、GPT、Claude、DeepSeek 等多种大模型。"
 pubDate: 2026-03-20
-heroImage: "https://example.com/image.jpg"
+heroImage: "/images/openclaw-cover.png"
 tags: ["openclaw", "AIGC"]
+featured: true
 ---
 
 

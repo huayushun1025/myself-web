@@ -6,9 +6,14 @@ import ProjectCard from '@/components/ProjectCard.astro';
 import { getCollection } from 'astro:content';
 import { sortByDate } from '@/lib/utils';
 
-// Get latest 3 blog posts
+// Get featured blog posts
 const allPosts = await getCollection('blog', ({ data }) => !data.draft);
-const latestPosts = sortByDate(allPosts).slice(0, 3);
+const featuredPosts = allPosts
+  .filter((post) => post.data.featured)
+  .slice(0, 3);
+const latestPosts = featuredPosts.length > 0
+  ? featuredPosts
+  : sortByDate(allPosts).slice(0, 3);
 
 // Get featured projects
 const allProjects = await getCollection('projects', ({ data }) => !data.draft);
@@ -164,17 +169,17 @@ const displayProjects = featuredProjects.length > 0
       <p class="text-lg text-muted-foreground mb-8">
         无论是技术交流、项目合作还是职业机会，欢迎随时联系
       </p>
-      <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+      <div class="flex flex-row items-center justify-center gap-2 flex-wrap">
         <a
-          href="mailto:hello@example.com"
-          class="px-8 py-4 rounded-xl font-semibold text-white transition-all duration-300 hover:scale-105"
+          href="mailto:hys1025@outlook.com"
+          class="px-4 py-2 text-sm rounded-lg font-semibold text-white transition-all duration-300 hover:scale-105"
           style="background: linear-gradient(135deg, hsl(var(--primary)), hsl(190 70% 60%)); box-shadow: 0 10px 40px -10px hsl(var(--primary) / 0.5);"
         >
           发送邮件
         </a>
         <a
           href="/experience"
-          class="px-8 py-4 rounded-xl font-semibold border border-border bg-card hover:bg-accent transition-all duration-300 hover:scale-105"
+          class="px-4 py-2 text-sm rounded-lg font-semibold border border-border bg-card hover:bg-accent transition-all duration-300 hover:scale-105"
         >
           查看经历
         </a>
