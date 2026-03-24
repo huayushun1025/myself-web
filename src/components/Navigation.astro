@@ -48,7 +48,8 @@ function isActive(href: string): boolean {
       <!-- Mobile Menu Button -->
       <button
         id="mobile-menu-btn"
-        class="md:hidden p-2 rounded-lg hover:bg-accent transition-colors"
+        type="button"
+        class="md:hidden p-2 rounded-lg hover:bg-accent transition-colors z-50"
         aria-label="Toggle menu"
       >
         <svg
@@ -92,26 +93,43 @@ function isActive(href: string): boolean {
 </header>
 
 <script>
-  // Mobile menu toggle
+  // Mobile menu toggle with deferred initialization
+  let menuInitialized = false;
+
   function initMobileMenu() {
     const menuBtn = document.getElementById('mobile-menu-btn');
     const mobileMenu = document.getElementById('mobile-menu');
 
-    menuBtn?.addEventListener('click', () => {
-      mobileMenu?.classList.toggle('hidden');
+    if (!menuBtn || !mobileMenu) return;
+
+    // Clone button to remove old listeners (avoid duplicate events)
+    const newBtn = menuBtn.cloneNode(true) as HTMLElement;
+    menuBtn.parentNode?.replaceChild(newBtn, menuBtn);
+
+    // Attach fresh click handler
+    newBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      mobileMenu.classList.toggle('hidden');
     });
 
-    // Close menu when clicking a link
-    mobileMenu?.querySelectorAll('a').forEach((link) => {
+    // Close menu when clicking navigation links
+    mobileMenu.querySelectorAll('a').forEach((link) => {
       link.addEventListener('click', () => {
-        mobileMenu?.classList.add('hidden');
+        mobileMenu.classList.add('hidden');
       });
     });
+
+    menuInitialized = true;
   }
 
-  // Run on initial load
-  initMobileMenu();
+  // Try immediate initialization
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initMobileMenu);
+  } else {
+    initMobileMenu();
+  }
 
-  // Re-run after page transitions (View Transitions)
+  // Re-run after page transitions
   document.addEventListener('astro:page-load', initMobileMenu);
 </script>
